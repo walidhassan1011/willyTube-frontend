@@ -17,6 +17,8 @@ import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import SettingsBrightnessIcon from "@mui/icons-material/SettingsBrightness";
+import { Link } from "react-router-dom";
+import { darkTheme } from "../utils/Theme";
 const Container = styled.div`
   flex: 1;
   background-color: ${({ theme }) => theme.bgLighter};
@@ -70,10 +72,18 @@ function Menu({ theme, setTheme }) {
   return (
     <Container>
       <Wrapper>
-        <Logo>
-          <Img src={WillyLogo} />
-          willyTube
-        </Logo>
+        <Link
+          to={"/"}
+          style={{
+            textDecoration: "none",
+            color: "inherit",
+          }}
+        >
+          <Logo>
+            <Img src={WillyLogo} />
+            willyTube
+          </Logo>
+        </Link>
         <Item>
           <HomeIcon />
           Home
@@ -147,7 +157,7 @@ function Menu({ theme, setTheme }) {
           }}
         >
           <SettingsBrightnessIcon />
-          Light Mode
+          {theme ? "Light" : "dark"}Mode
         </Item>
       </Wrapper>
     </Container>

@@ -56,7 +56,13 @@ function Navbar() {
     <Container>
       <Wrapper>
         <Search>
-          <Input type="text" placeholder="Search" />
+          <Input
+            type="text"
+            placeholder="Search"
+            style={{
+              color: "#3ea6ff",
+            }}
+          />
           <SearchOutlined
             sx={{
               color: "#3ea6ff",
