@@ -7,6 +7,7 @@ import {
 import React from "react";
 import styled from "styled-components";
 import Comments from "../components/Comments";
+import Card from "../components/Card";
 const Container = styled.div`
   display: flex;
   gap: 24px;
@@ -173,7 +174,28 @@ function Video() {
         <Hr />
         <Comments />
       </Content>
-      <Recommendation>Recommendation</Recommendation>
+      <Recommendation>
+        <Card type="sm" />
+        <Card type="sm" />
+        <Card type="sm" />
+        <Card type="sm" />
+        <Card type="sm" />
+        <Card type="sm" />
+        <Card type="sm" />
+        <Card type="sm" />
+        <Card type="sm" />
+        <Card type="sm" />
+        <Card type="sm" />
+        <Card type="sm" />
+        <Card type="sm" />
+        <Card type="sm" />
+        <Card type="sm" />
+        <Card type="sm" />
+        <Card type="sm" />
+        <Card type="sm" />
+        <Card type="sm" />
+        <Card type="sm" />
+      </Recommendation>
     </Container>
   );
 }

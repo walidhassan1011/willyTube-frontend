@@ -48,6 +48,9 @@ const Item = styled.div`
   gap: 20px;
   cursor: pointer;
   padding: 3px 0;
+  &:hover {
+    background-color: ${({ theme }) => theme.soft};
+  }
 `;
 const Hr = styled.hr`
   margin: 15px 0px;
