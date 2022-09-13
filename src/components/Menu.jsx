@@ -19,6 +19,7 @@ import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import SettingsBrightnessIcon from "@mui/icons-material/SettingsBrightness";
 import { Link } from "react-router-dom";
 import { darkTheme } from "../utils/Theme";
+import { useSelector } from "react-redux";
 const Container = styled.div`
   flex: 1;
   background-color: ${({ theme }) => theme.bgLighter};
@@ -72,6 +73,8 @@ const Button = styled.button`
 `;
 
 function Menu({ theme, setTheme }) {
+  const { user } = useSelector((state) => state.user);
+
   return (
     <Container>
       <Wrapper>
@@ -91,14 +94,30 @@ function Menu({ theme, setTheme }) {
           <HomeIcon />
           Home
         </Item>
-        <Item>
-          <ExploreOutlinedIcon />
-          Explore
-        </Item>
-        <Item>
-          <SubscriptionsOutlinedIcon />
-          Subscriptions
-        </Item>
+        <Link
+          to={"/trends"}
+          style={{
+            textDecoration: "none",
+            color: "inherit",
+          }}
+        >
+          <Item>
+            <ExploreOutlinedIcon />
+            Explore
+          </Item>
+        </Link>
+        <Link
+          to={"/subscriptions"}
+          style={{
+            textDecoration: "none",
+            color: "inherit",
+          }}
+        >
+          <Item>
+            <SubscriptionsOutlinedIcon />
+            Subscriptions
+          </Item>
+        </Link>
         <Hr />
         <Item>
           <VideoLibraryOutlinedIcon />
@@ -109,20 +128,24 @@ function Menu({ theme, setTheme }) {
           History
         </Item>
         <Hr />
-        <Login>
-          Sign in to like Videos, comment, and subscribe.
-          <Link
-            to={"/signin"}
-            style={{
-              textDecoration: "none",
-            }}
-          >
-            <Button>
-              <AccountCircleOutlinedIcon /> SIGN IN
-            </Button>
-          </Link>
-        </Login>
-        <Hr />
+        {!user && (
+          <>
+            <Login>
+              Sign in to like Videos, comment, and subscribe.
+              <Link
+                to={"/signin"}
+                style={{
+                  textDecoration: "none",
+                }}
+              >
+                <Button>
+                  <AccountCircleOutlinedIcon /> SIGN IN
+                </Button>
+              </Link>
+            </Login>
+            <Hr />
+          </>
+        )}
 
         <Item>
           <LibraryMusicOutlinedIcon />
