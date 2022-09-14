@@ -87,9 +87,19 @@ function Signin() {
 
   const signInWithGoogle = async () => {
     try {
+      dispatch(login());
       const result = await signInWithPopup(auth, provider);
-      console.log(result);
+      const { data } = await axios.post(
+        "http://localhost:5000/api/auth/google",
+        {
+          name: result.user.displayName,
+          email: result.user.email,
+          img: result.user.photoURL,
+        }
+      );
+      dispatch(loginSuccess(data));
     } catch (err) {
+      dispatch(loginFailed(err));
       console.log(err);
     }
   };

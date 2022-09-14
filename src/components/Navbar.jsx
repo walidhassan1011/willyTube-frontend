@@ -91,7 +91,7 @@ function Navbar() {
         {user ? (
           <User>
             <VideoCallOutlined />
-            <Avatar />
+            <Avatar src={user?.img} />
             {user.name}
           </User>
         ) : (

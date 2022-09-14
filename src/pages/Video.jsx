@@ -1,13 +1,22 @@
 import {
   AddTaskOutlined,
   ReplyOutlined,
+  ThumbDown,
   ThumbDownOffAltOutlined,
+  ThumbUp,
   ThumbUpOutlined,
 } from "@mui/icons-material";
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import Comments from "../components/Comments";
 import Card from "../components/Card";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { useState } from "react";
+import axios from "axios";
+import { dislike, fetchSuccess, like } from "../redux/videoSlice";
+import { format } from "timeago.js";
+import { subscription } from "../redux/userSlice";
 const Container = styled.div`
   display: flex;
   gap: 24px;
@@ -106,6 +115,112 @@ const Subscribe = styled.button`
   cursor: pointer;
 `;
 function Video() {
+  const { user } = useSelector((state) => state.user);
+  const { video } = useSelector((state) => state.video);
+  const dispatch = useDispatch();
+  const path = useLocation().pathname.split("/")[2];
+
+  const [channel, setChannel] = useState({});
+  console.log(user.subscribedUsers);
+  console.log(channel._id);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const videoRes = await axios.get(
+          `
+        http://localhost:5000/api/videos/find/${path}`,
+          {
+            headers: {
+              authorization: `Bearer ${user.token}`,
+            },
+          }
+        );
+        const channelRes = await axios.get(
+          `
+        http://localhost:5000/api/users/find/${videoRes.data.userId}`,
+          {
+            headers: {
+              authorization: `Bearer ${user.token}`,
+            },
+          }
+        );
+        setChannel(channelRes.data);
+        dispatch(fetchSuccess(videoRes.data));
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchData();
+  }, [path, dispatch]);
+  const handleLike = async () => {
+    try {
+      await axios.put(
+        ` http://localhost:5000/api/users/like/${video._id}`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${user.token}`,
+          },
+        }
+      );
+      dispatch(like(user._id));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const handleDislike = async () => {
+    try {
+      await axios.put(
+        ` http://localhost:5000/api/users/dislike/${video._id}`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${user.token}`,
+          },
+        }
+      );
+      dispatch(dislike(user._id));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleSub = async () => {
+    try {
+      if (user.subscribedUsers.includes(channel._id)) {
+        console.log("unsub");
+        await axios.put(
+          ` http://localhost:5000/api/users/unsubscribe/${channel._id}`,
+          {},
+          {
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${user.token}`,
+            },
+          }
+        );
+      } else {
+        console.log("sub");
+        await axios.put(
+          ` http://localhost:5000/api/users/subscribe/${channel._id}`,
+          {},
+          {
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${user.token}`,
+            },
+          }
+        );
+      }
+
+      dispatch(subscription(channel._id));
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <Container>
       <Content>
@@ -120,16 +235,26 @@ function Video() {
             allowfullscreen
           ></iframe>
         </VideoWrapper>
-        <Title>test video</Title>
+        <Title>{video.title}</Title>
         <Details>
-          <Info>66,000 views • 2 years ago</Info>
+          <Info>
+            {video.views} views • {format(video.createdAt)}
+          </Info>
           <Buttons>
-            <Button>
-              <ThumbUpOutlined />
-              123
+            <Button onClick={handleLike}>
+              {video.likes?.includes(user._id) ? (
+                <ThumbUp />
+              ) : (
+                <ThumbUpOutlined />
+              )}
+              {video.likes?.length}
             </Button>
-            <Button>
-              <ThumbDownOffAltOutlined />
+            <Button onClick={handleDislike}>
+              {video.dislikes?.includes(user._id) ? (
+                <ThumbDown />
+              ) : (
+                <ThumbDownOffAltOutlined />
+              )}
               Dislike
             </Button>
             <Button>
@@ -146,16 +271,13 @@ function Video() {
         <Hr />
         <Channel>
           <ChannelInfo>
-            <Image src="https://yt3.ggpht.com/yti/APfAmoE-Q0ZLJ4vk3vqmV4Kwp0sbrjxLyB8Q4ZgNsiRH=s88-c-k-c0x00ffffff-no-rj-mo" />
+            <Image src={user.img} />
             <ChannelDetails>
-              <ChannelName>Channel Name</ChannelName>
-              <ChannelCounter>1.2M subscribers</ChannelCounter>
-              <Description>
-                Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-                Consequatur animi cupiditate est modi perspiciatis tenetur,
-                autem odit doloribus ipsum nostrum magnam dolorum sequi
-                reiciendis itaque? Sequi necessitatibus possimus sed cum.
-              </Description>
+              <ChannelName>{channel.name}</ChannelName>
+              <ChannelCounter>
+                {channel.subscribers} {""}subscibers
+              </ChannelCounter>
+              <Description>{video.description}</Description>
             </ChannelDetails>
           </ChannelInfo>
           <Subscribe
@@ -167,14 +289,18 @@ function Video() {
               border: "none",
               height: "max-content",
             }}
+            onClick={handleSub}
           >
-            Subscribe
+            {user.subscribedUsers?.includes(channel._id)
+              ? "subscribed"
+              : "subscribe"}
           </Subscribe>
         </Channel>
         <Hr />
         <Comments />
       </Content>
       <Recommendation>
+        {/* <Card type="sm" />
         <Card type="sm" />
         <Card type="sm" />
         <Card type="sm" />
@@ -193,8 +319,7 @@ function Video() {
         <Card type="sm" />
         <Card type="sm" />
         <Card type="sm" />
-        <Card type="sm" />
-        <Card type="sm" />
+        <Card type="sm" /> */}
       </Recommendation>
     </Container>
   );

@@ -62,7 +62,7 @@ function Card({ type, video }) {
   console.log(channel);
   return (
     <Link
-      to={"/video/test"}
+      to={`/video/${video._id}`}
       style={{
         textDecoration: "none",
       }}
