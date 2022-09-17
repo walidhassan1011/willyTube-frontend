@@ -1,4 +1,7 @@
-import React from "react";
+import axios from "axios";
+import React, { useState } from "react";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -36,20 +39,35 @@ const Text = styled.span`
   font-size: 14px;
 `;
 
-function Comment() {
+function Comment({ comment }) {
+  const [channel, setChannel] = useState({});
+  const { user } = useSelector((state) => state.user);
+  useEffect(() => {
+    const fetchComment = async () => {
+      try {
+        const { data } = await axios.get(
+          `http://localhost:5000/api/users/find/${comment.userId}`,
+          {
+            headers: {
+              authorization: `Bearer ${user.token}`,
+            },
+          }
+        );
+        setChannel(data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchComment();
+  }, [comment.userId]);
   return (
     <Container>
-      <Avatar src="https://yt3.ggpht.com/yti/APfAmoE-Q0ZLJ4vk3vqmV4Kwp0sbrjxLyB8Q4ZgNsiRH=s88-c-k-c0x00ffffff-no-rj-mo" />
+      <Avatar src={channel.img} />
       <Details>
         <Name>
-          walid <Date>1 day ago</Date>
+          {channel.name} <Date>1 day ago</Date>
         </Name>
-        <Text>
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Qui, ipsum
-          nobis reprehenderit nostrum repudiandae blanditiis non enim
-          accusantium excepturi eveniet vel sint, harum, dolorum nulla ipsam
-          dolor ullam autem incidunt?
-        </Text>
+        <Text>{comment.desc}</Text>
       </Details>
     </Container>
   );

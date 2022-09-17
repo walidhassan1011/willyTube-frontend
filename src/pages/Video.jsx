@@ -114,6 +114,11 @@ const Subscribe = styled.button`
   padding: 10px 20px;
   cursor: pointer;
 `;
+const VideoFrame = styled.video`
+  max-height: 720px;
+  width: 100%;
+  object-fit: cover;
+`;
 function Video() {
   const { user } = useSelector((state) => state.user);
   const { video } = useSelector((state) => state.video);
@@ -121,8 +126,6 @@ function Video() {
   const path = useLocation().pathname.split("/")[2];
 
   const [channel, setChannel] = useState({});
-  console.log(user.subscribedUsers);
-  console.log(channel._id);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -191,7 +194,6 @@ function Video() {
   const handleSub = async () => {
     try {
       if (user.subscribedUsers.includes(channel._id)) {
-        console.log("unsub");
         await axios.put(
           ` http://localhost:5000/api/users/unsubscribe/${channel._id}`,
           {},
@@ -203,7 +205,6 @@ function Video() {
           }
         );
       } else {
-        console.log("sub");
         await axios.put(
           ` http://localhost:5000/api/users/subscribe/${channel._id}`,
           {},
@@ -225,15 +226,7 @@ function Video() {
     <Container>
       <Content>
         <VideoWrapper>
-          <iframe
-            width="100%"
-            height="550"
-            src="https://www.youtube.com/embed/k3Vfj-e1Ma4"
-            title="YouTube video player"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-          ></iframe>
+          <VideoFrame src={video.videoUrl} />
         </VideoWrapper>
         <Title>{video.title}</Title>
         <Details>
@@ -297,7 +290,7 @@ function Video() {
           </Subscribe>
         </Channel>
         <Hr />
-        <Comments />
+        <Comments videoId={video._id} />
       </Content>
       <Recommendation>
         {/* <Card type="sm" />
